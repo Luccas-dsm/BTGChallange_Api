@@ -4,14 +4,29 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.13.35507.96 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BTGChallange.Api", "BTGChallange.Api\BTGChallange.Api.csproj", "{028E6943-C8D8-49D1-AF6C-33BEDCCF68F0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35F95618-3E35-41D1-9C18-0A577CACB902} = {35F95618-3E35-41D1-9C18-0A577CACB902}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BTGChallange.Service", "BTGChallange.Service\BTGChallange.Service.csproj", "{E4D24A0D-977F-4AFF-B6DF-A84ADA8E684D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{294EF1B4-878B-4475-B961-23D7800074C1} = {294EF1B4-878B-4475-B961-23D7800074C1}
+		{96F803FB-4DAC-4BAD-AC60-E2C43E0DC09F} = {96F803FB-4DAC-4BAD-AC60-E2C43E0DC09F}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BTGChallange.Domain", "BTGChallange.Domain\BTGChallange.Domain.csproj", "{96F803FB-4DAC-4BAD-AC60-E2C43E0DC09F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BTGChallange.Ioc", "BTGChallange.Ioc\BTGChallange.Ioc.csproj", "{35F95618-3E35-41D1-9C18-0A577CACB902}"
+	ProjectSection(ProjectDependencies) = postProject
+		{294EF1B4-878B-4475-B961-23D7800074C1} = {294EF1B4-878B-4475-B961-23D7800074C1}
+		{96F803FB-4DAC-4BAD-AC60-E2C43E0DC09F} = {96F803FB-4DAC-4BAD-AC60-E2C43E0DC09F}
+		{E4D24A0D-977F-4AFF-B6DF-A84ADA8E684D} = {E4D24A0D-977F-4AFF-B6DF-A84ADA8E684D}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BTGChallange.Repository", "BTGChallange.Repository\BTGChallange.Repository.csproj", "{294EF1B4-878B-4475-B961-23D7800074C1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{96F803FB-4DAC-4BAD-AC60-E2C43E0DC09F} = {96F803FB-4DAC-4BAD-AC60-E2C43E0DC09F}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
