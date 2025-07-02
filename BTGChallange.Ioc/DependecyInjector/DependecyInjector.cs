@@ -5,6 +5,8 @@ using BTGChallange.Domain.Interfaces;
 using BTGChallange.Repository.DynamoDb;
 using BTGChallange.Service.Interfaces;
 using BTGChallange.Service.Servicos;
+using BTGChallange.Service.Validator;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +22,7 @@ namespace Integrador.Ioc.DependecyInjector
         {
             AddRepository(service, configuration);
             AddService(service);
-            // AddValidators(service);
+            AddValidators(service);
         }
 
         /// <summary>
@@ -67,6 +69,8 @@ namespace Integrador.Ioc.DependecyInjector
                 };
             });
 
+            service.AddValidatorsFromAssemblyContaining<CadastrarLimiteDtoValidator>();
+            service.AddValidatorsFromAssemblyContaining<AtualizarLimiteDtoValidator>();
 
         }
 
