@@ -32,6 +32,8 @@ namespace Integrador.Ioc.DependecyInjector
         private static void AddService(IServiceCollection service)
         {
             service.AddScoped<IServicoLimiteConta, ServicoLimiteConta>();
+            service.AddScoped<IServicoTransacaoPix, ServicoTransacaoPix>();
+
         }
 
 
@@ -107,13 +109,15 @@ namespace Integrador.Ioc.DependecyInjector
                             configuration.GetValue<string>("AWS:Region", "us-east-1")
                         )
                     };
-              
+
                     return new AmazonDynamoDBClient(prodConfig);
                 }
             });
 
             // Repositórios
             service.AddScoped<IRepositorioLimiteConta, RepositorioLimiteContaDynamoDb>();
+            service.AddScoped<IRepositorioTransacaoPix, RepositorioTransacaoPixDynamoDb>();
+
         }
     }
 }

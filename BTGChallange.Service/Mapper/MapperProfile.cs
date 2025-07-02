@@ -7,9 +7,11 @@ namespace Integrador.Service.Mapper
     public class MapperProfile : Profile
     {
         public MapperProfile()
-        {            
+        {
+            CreateMap<LimiteContaCorrente, LimiteContaDto>();
             CreateMap<CadastrarLimiteDto, LimiteContaCorrente>()
                 .ConstructUsing(src => new LimiteContaCorrente(src.Documento, src.Agencia, src.Conta, src.LimitePix));
+
 
         }
     }
