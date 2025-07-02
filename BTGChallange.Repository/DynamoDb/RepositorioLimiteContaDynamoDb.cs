@@ -15,9 +15,36 @@ namespace BTGChallange.Repository.DynamoDb
             _dynamoDb = dynamoDb;
         }
 
-        public Task<bool> AtualizarAsync(LimiteContaCorrente limite)
+        public async Task<bool> AtualizarAsync(LimiteContaCorrente limite)
         {
-            throw new NotImplementedException();
+            var chavePrimaria = limite.ObterChaveConta();
+
+            var request = new UpdateItemRequest
+            {
+                TableName = _nomeTabela,
+                Key = new Dictionary<string, AttributeValue>
+                {
+                    ["ChaveConta"] = new AttributeValue { S = chavePrimaria }
+                },
+                UpdateExpression = "SET LimitePix = :limitePix, LimiteDisponivel = :limiteDisponivel, AtualizadoEm = :atualizadoEm",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    [":limitePix"] = new AttributeValue { N = limite.LimitePix.ToString() },
+                    [":limiteDisponivel"] = new AttributeValue { N = limite.LimiteDisponivel.ToString() },
+                    [":atualizadoEm"] = new AttributeValue { S = DateTime.UtcNow.ToString("O") }
+                },
+                ConditionExpression = "attribute_exists(ChaveConta)"
+            };
+
+            try
+            {
+                await _dynamoDb.UpdateItemAsync(request);
+                return true;
+            }
+            catch (ConditionalCheckFailedException)
+            {
+                return false; // Conta não existe
+            }
         }
 
         public async Task<bool> CadastrarAsync(LimiteContaCorrente limite)
@@ -42,19 +69,50 @@ namespace BTGChallange.Repository.DynamoDb
             }
         }
 
-        public Task<bool> ContaExisteAsync(string agencia, string conta)
+        public async Task<LimiteContaCorrente?> ObterPorContaAsync(string agencia, string conta)
         {
-            throw new NotImplementedException();
+            var chavePrimaria = $"{agencia}#{conta}";
+
+            var request = new GetItemRequest
+            {
+                TableName = _nomeTabela,
+                Key = new Dictionary<string, AttributeValue>
+                {
+                    ["ChaveConta"] = new AttributeValue { S = chavePrimaria }
+                }
+            };
+
+            var response = await _dynamoDb.GetItemAsync(request);
+
+            if (!response.IsItemSet)
+                return null;
+
+            return ConverterParaEntidade(response.Item);
         }
 
-        public Task<LimiteContaCorrente?> ObterPorContaAsync(string agencia, string conta)
+        public async Task<bool> RemoverAsync(string agencia, string conta)
         {
-            throw new NotImplementedException();
-        }
+            var chavePrimaria = $"{agencia}#{conta}";
 
-        public Task<bool> RemoverAsync(string agencia, string conta)
-        {
-            throw new NotImplementedException();
+            var request = new DeleteItemRequest
+            {
+                TableName = _nomeTabela,
+                Key = new Dictionary<string, AttributeValue>
+                {
+                    ["ChaveConta"] = new AttributeValue { S = chavePrimaria }
+                },
+                ConditionExpression = "attribute_exists(ChaveConta)"
+            };
+
+            try
+            {
+                await _dynamoDb.DeleteItemAsync(request);
+                return true;
+            }
+            catch (ConditionalCheckFailedException)
+            {
+                return false; // Conta não existe
+            }
         }
 
         private static Dictionary<string, AttributeValue> ConverterParaItem(LimiteContaCorrente limite)
@@ -72,6 +130,44 @@ namespace BTGChallange.Repository.DynamoDb
                     new AttributeValue { S = limite.AtualizadoEm.Value.ToString("O") } :
                     new AttributeValue { NULL = true }
             };
+        }
+
+        private static LimiteContaCorrente ConverterParaEntidade(Dictionary<string, AttributeValue> item)
+        {
+            // Extrair dados básicos
+            var documento = item["Documento"].S;
+            var agencia = item["Agencia"].S;
+            var conta = item["Conta"].S;
+            var limitePix = decimal.Parse(item["LimitePix"].N);
+
+            // Criar entidade usando construtor público (mais limpo que reflection)
+            var limite = new LimiteContaCorrente(documento, agencia, conta, limitePix);
+
+            // Usar reflection apenas para ajustar propriedades que vieram do banco
+            var tipo = typeof(LimiteContaCorrente);
+
+            // Atualizar LimiteDisponivel
+            var limiteDisponivelProp = tipo.GetProperty("LimiteDisponivel");
+            limiteDisponivelProp?.SetValue(limite, decimal.Parse(item["LimiteDisponivel"].N));
+
+            // Atualizar CriadoEm
+            var criadoEmProp = tipo.GetProperty("CriadoEm");
+            criadoEmProp?.SetValue(limite, DateTime.Parse(item["CriadoEm"].S));
+
+            // Atualizar AtualizadoEm se existir - CORREÇÃO AQUI
+            if (item.ContainsKey("AtualizadoEm"))
+            {
+                var atualizadoEmAttribute = item["AtualizadoEm"];
+
+                // CORREÇÃO: Tratar bool? corretamente
+                if (atualizadoEmAttribute.NULL != true && !string.IsNullOrEmpty(atualizadoEmAttribute.S))
+                {
+                    var atualizadoEmProp = tipo.GetProperty("AtualizadoEm");
+                    atualizadoEmProp?.SetValue(limite, DateTime.Parse(atualizadoEmAttribute.S));
+                }
+            }
+
+            return limite;
         }
     }
 }

@@ -13,6 +13,5 @@ namespace BTGChallange.Domain.Interfaces
         Task<bool> CadastrarAsync(LimiteContaCorrente limite);
         Task<bool> AtualizarAsync(LimiteContaCorrente limite);
         Task<bool> RemoverAsync(string agencia, string conta);
-        Task<bool> ContaExisteAsync(string agencia, string conta);
     }
 }

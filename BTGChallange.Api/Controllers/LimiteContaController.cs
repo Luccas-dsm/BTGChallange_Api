@@ -70,5 +70,57 @@ namespace BTGChallange.Api.Controllers
             });
         }
 
+        /// <summary>
+        /// Atualiza o limite de uma conta existente
+        /// </summary>
+        [HttpPut("atualizar")]
+        public async Task<IActionResult> AtualizarLimite([FromBody] AtualizarLimiteDto dto)
+        {
+            var sucesso = await _servicoLimiteConta.AtualizarLimiteAsync(dto);
+
+            if (!sucesso)
+            {
+                return NotFound(new
+                {
+                    Sucesso = false,
+                    Mensagem = "Conta não encontrada para atualização",
+                    StatusCode = 404
+                });
+            }
+
+            return Ok(new
+            {
+                Sucesso = true,
+                Mensagem = "Limite atualizado com sucesso",
+                StatusCode = 200
+            });
+        }
+
+        /// <summary>
+        /// Remove o limite de uma conta
+        /// </summary>
+        [HttpDelete("{agencia}/{conta}")]
+        public async Task<IActionResult> RemoverLimite(string agencia, string conta)
+        {
+            var sucesso = await _servicoLimiteConta.RemoverLimiteAsync(agencia, conta);
+
+            if (!sucesso)
+            {
+                return NotFound(new
+                {
+                    Sucesso = false,
+                    Mensagem = "Conta não encontrada para remoção",
+                    StatusCode = 404
+                });
+            }
+
+            return Ok(new
+            {
+                Sucesso = true,
+                Mensagem = "Limite removido com sucesso",
+                StatusCode = 200
+            });
+        }
+
     }
 }

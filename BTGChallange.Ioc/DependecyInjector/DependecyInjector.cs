@@ -70,6 +70,7 @@ namespace Integrador.Ioc.DependecyInjector
 
         }
 
+
         /// <summary>
         /// Injeções de dependencia relacionadas ao Repository
         /// </summary>
@@ -102,11 +103,7 @@ namespace Integrador.Ioc.DependecyInjector
                             configuration.GetValue<string>("AWS:Region", "us-east-1")
                         )
                     };
-
-                    // O SDK automaticamente procura credenciais em:
-                    // 1. Variáveis de ambiente
-                    // 2. Arquivo ~/.aws/credentials
-                    // 3. IAM Roles (se rodando na AWS)
+              
                     return new AmazonDynamoDBClient(prodConfig);
                 }
             });

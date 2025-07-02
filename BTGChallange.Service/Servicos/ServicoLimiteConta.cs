@@ -17,6 +17,16 @@ namespace BTGChallange.Service.Servicos
             _mapper = mapper;
         }
 
+        public async Task<bool> AtualizarLimiteAsync(AtualizarLimiteDto dto)
+        {
+            var limite = await _repositorio.ObterPorContaAsync(dto.Agencia, dto.Conta);
+            if (limite == null)
+                return false;
+
+            limite.AtualizarLimite(dto.NovoLimitePix);
+            return await _repositorio.AtualizarAsync(limite);
+        }
+
         public Task<LimiteContaDto?> BuscarLimiteAsync(string agencia, string conta)
         {
             throw new NotImplementedException();
@@ -28,6 +38,9 @@ namespace BTGChallange.Service.Servicos
             return await _repositorio.CadastrarAsync(limite);
         }
 
-
+        public async Task<bool> RemoverLimiteAsync(string agencia, string conta)
+        {
+            return await _repositorio.RemoverAsync(agencia, conta);
+        }
     }
 }

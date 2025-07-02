@@ -6,6 +6,8 @@ namespace BTGChallange.Service.Interfaces
     {
         Task<bool> CadastrarLimiteAsync(CadastrarLimiteDto dto);
         Task<LimiteContaDto?> BuscarLimiteAsync(string agencia, string conta);
+        Task<bool> AtualizarLimiteAsync(AtualizarLimiteDto dto);
+        Task<bool> RemoverLimiteAsync(string agencia, string conta);
 
     }
 }
