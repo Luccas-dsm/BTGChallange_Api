@@ -1,4 +1,10 @@
-﻿using System.Text.Json;
+﻿using Amazon;
+using Amazon.DynamoDBv2;
+using Amazon.Runtime;
+using BTGChallange.Domain.Interfaces;
+using BTGChallange.Repository.DynamoDb;
+using BTGChallange.Service.Interfaces;
+using BTGChallange.Service.Servicos;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,20 +20,16 @@ namespace Integrador.Ioc.DependecyInjector
         {
             AddRepository(service, configuration);
             AddService(service);
-            AddValidators(service);
+            // AddValidators(service);
         }
 
-
-        //IMPORTANTE: OS SERVIÇOS QUE UTILIZAM URL BASE DO CLIENTE HTTP DEVEM SER REGISTRADOS SOMENTE NO ADDHTTPCLIENT E NÃO EM OUTRO TIPO DE INJEÇÃO DE DEPENDENCIA
-        //CASO CONTRÁRIO, O CLIENTE HTTP NÃO SERÁ INJETADO CORRETAMENTE
         /// <summary>
         /// Injeções de dependencia relacionadas ao Service
         /// </summary>
         /// <param name="serviceCollection"></param>
         private static void AddService(IServiceCollection service)
         {
-
-
+            service.AddScoped<IServicoLimiteConta, ServicoLimiteConta>();
         }
 
 
@@ -65,7 +67,6 @@ namespace Integrador.Ioc.DependecyInjector
                 };
             });
 
-          //  service.AddValidatorsFromAssemblyContaining<ProdutoValidator>();
 
         }
 
@@ -75,6 +76,43 @@ namespace Integrador.Ioc.DependecyInjector
         /// <param name="serviceCollection"></param>
         private static void AddRepository(IServiceCollection service, IConfiguration configuration)
         {
+
+            service.AddSingleton<IAmazonDynamoDB>(provider =>
+            {
+                var environment = configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT");
+                var isDevelopment = environment == "Development";
+
+                if (isDevelopment)
+                {
+                    // Desenvolvimento: DynamoDB Local
+                    var localConfig = new AmazonDynamoDBConfig
+                    {
+                        ServiceURL = "http://localhost:8000",
+                        RegionEndpoint = RegionEndpoint.USEast1
+                    };
+                    var fakeCredentials = new BasicAWSCredentials("fake", "fake");
+                    return new AmazonDynamoDBClient(fakeCredentials, localConfig);
+                }
+                else
+                {
+                    // Produção: AWS Real (usa credenciais automáticas)
+                    var prodConfig = new AmazonDynamoDBConfig
+                    {
+                        RegionEndpoint = RegionEndpoint.GetBySystemName(
+                            configuration.GetValue<string>("AWS:Region", "us-east-1")
+                        )
+                    };
+
+                    // O SDK automaticamente procura credenciais em:
+                    // 1. Variáveis de ambiente
+                    // 2. Arquivo ~/.aws/credentials
+                    // 3. IAM Roles (se rodando na AWS)
+                    return new AmazonDynamoDBClient(prodConfig);
+                }
+            });
+
+            // Repositórios
+            service.AddScoped<IRepositorioLimiteConta, RepositorioLimiteContaDynamoDb>();
         }
     }
 }

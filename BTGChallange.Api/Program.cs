@@ -12,7 +12,6 @@ namespace Integrador
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            ConfigureAutehntication(builder);
             ConfigureServices(builder);
             AddConnections();
             ConfigureApplication(builder.Build(), builder.Configuration);
@@ -24,24 +23,7 @@ namespace Integrador
         private static void AddConnections()
         {
 
-        }
-
-        /// <summary>
-        /// Retorna o conteudo de um json especifico, normalmente appSettinhs.json
-        /// </summary>
-        /// <param name="pathDirectory">Caminho do Diretorio</param>
-        /// <param name="jsonNome">Nome do arquivo json</param>
-        /// <param name="section">Nome do valor que deseja buscar</param>
-        /// <returns></returns>
-        private static string GetConfigurationBuilder(string pathDirectory, string jsonNome, string section)
-        {
-            IConfiguration Configuration = new ConfigurationBuilder()
-                                .SetBasePath(pathDirectory)
-                                .AddJsonFile(jsonNome)
-                                .Build();
-
-            return Configuration[section];
-        }
+        }      
 
         /// <summary>
         /// Adiciona os serviços ao builder

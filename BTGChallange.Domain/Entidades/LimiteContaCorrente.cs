@@ -72,4 +72,3 @@ namespace BTGChallange.Domain.Entidades
         }
     }
 }
-}
