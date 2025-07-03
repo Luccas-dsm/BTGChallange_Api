@@ -131,7 +131,7 @@ docker-compose up -d
 
 - **Swagger UI**: https://localhost:8081/swagger
 
-### **6. Execute os testes**
+### **4. Execute os testes**
 
 ```bash
 dotnet test
