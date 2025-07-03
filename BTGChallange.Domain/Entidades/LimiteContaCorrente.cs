@@ -12,6 +12,7 @@ namespace BTGChallange.Domain.Entidades
         public DateTime CriadoEm { get; private set; }
         public DateTime? AtualizadoEm { get; private set; }
 
+        #pragma warning disable CS8618 
         protected LimiteContaCorrente() { }
 
         public LimiteContaCorrente(string documento, string agencia, string conta, decimal limitePix)

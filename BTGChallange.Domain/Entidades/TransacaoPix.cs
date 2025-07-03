@@ -10,6 +10,7 @@
         public bool Aprovada { get; private set; }
         public string? MotivoRejeicao { get; private set; }
 
+        #pragma warning disable CS8618
         protected TransacaoPix() { } // Para ORMs
 
         public TransacaoPix(string agencia, string conta, decimal valor)

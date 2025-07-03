@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BTGChallange.Repository", "
 		{96F803FB-4DAC-4BAD-AC60-E2C43E0DC09F} = {96F803FB-4DAC-4BAD-AC60-E2C43E0DC09F}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BTGChallange.Test", "BTGChallange.Test\BTGChallange.Test.csproj", "{56062425-EDC5-4821-AE8B-93AF2A57CB2A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +56,10 @@ Global
 		{294EF1B4-878B-4475-B961-23D7800074C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{294EF1B4-878B-4475-B961-23D7800074C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{294EF1B4-878B-4475-B961-23D7800074C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56062425-EDC5-4821-AE8B-93AF2A57CB2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56062425-EDC5-4821-AE8B-93AF2A57CB2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56062425-EDC5-4821-AE8B-93AF2A57CB2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56062425-EDC5-4821-AE8B-93AF2A57CB2A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

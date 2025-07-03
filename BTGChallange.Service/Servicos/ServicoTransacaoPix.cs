@@ -21,17 +21,17 @@ namespace BTGChallange.Service.Servicos
 
         public async Task<ResultadoTransacaoDto> ProcessarTransacaoAsync(ProcessarPixDto dto)
         {
-            // 1. Buscar a conta
+            
             var limite = await _repositorioLimite.ObterPorContaAsync(dto.Agencia, dto.Conta);
             if (limite == null)
             {
                 return ResultadoTransacaoDto.ContaNaoEncontrada();
             }
 
-            // 2. Criar a transação
+            
             var transacao = new TransacaoPix(dto.Agencia, dto.Conta, dto.Valor);
 
-            // 3. Verificar se tem limite disponível
+            
             if (!limite.PodeProcessarTransacao(dto.Valor))
             {
                 transacao.Rejeitar("Limite insuficiente");
@@ -41,10 +41,9 @@ namespace BTGChallange.Service.Servicos
 
             try
             {
-                // 4. Consumir o limite
+                
                 limite.ConsumirLimite(dto.Valor);
-
-                // 5. Atualizar no banco
+                
                 var atualizacaoSucesso = await _repositorioLimite.AtualizarAsync(limite);
 
                 if (atualizacaoSucesso)
