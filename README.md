@@ -172,6 +172,13 @@ dotnet test
 
 ```
 
+## 📚 Referencias
+
+Como o DynamoDb é novo para mim, busquei sobre seu uso e implementação nas seguintes fontes:
+https://medium.com/@syedshamail3/mastering-dynamodb-crud-operations-with-net-core-your-complete-guide-1af5498b89f0
+https://medium.com/@shahabaj.s.shaikh/local-development-with-dynamodb-setup-and-usage-guide-8d3a9adec626
+https://docs.aws.amazon.com/pt_br/amazondynamodb/latest/developerguide/DotNetDynamoDBContext.html
+
 #### 👨‍💻 Desenvolvido por Luccas da Silva Machado
 
 ---
