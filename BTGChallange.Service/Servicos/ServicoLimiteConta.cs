@@ -27,9 +27,10 @@ namespace BTGChallange.Service.Servicos
             return await _repositorio.AtualizarAsync(limite);
         }
 
-        public Task<LimiteContaDto?> BuscarLimiteAsync(string agencia, string conta)
+        public async Task<LimiteContaDto?> BuscarLimiteAsync(string agencia, string conta)
         {
-            throw new NotImplementedException();
+            var limite = await _repositorio.ObterPorContaAsync(agencia, conta);
+            return limite != null ? _mapper.Map<LimiteContaDto>(limite) : null;
         }
 
         public async Task<bool> CadastrarLimiteAsync(CadastrarLimiteDto dto)

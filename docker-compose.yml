@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  dynamodb:
+    image: amazon/dynamodb-local
+    container_name: dynamodb_local
+    ports:
+      - "8082:8000"
+    command: -jar DynamoDBLocal.jar -sharedDb
+    networks:
+      - btgnet
+
+  btg-api:
+    build:
+      context: .
+      dockerfile: BTGChallange.Api/Dockerfile
+    container_name: btg_api
+    ports:
+      - "8081:8080"
+    depends_on:
+      - dynamodb
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - AWS_ServiceURL=http://dynamodb:8000
+    networks:
+      - btgnet
+
+networks:
+  btgnet:
+    driver: bridge

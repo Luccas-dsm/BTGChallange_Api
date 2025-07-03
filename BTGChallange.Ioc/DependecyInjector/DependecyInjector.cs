@@ -3,6 +3,7 @@ using Amazon.DynamoDBv2;
 using Amazon.Runtime;
 using BTGChallange.Domain.Interfaces;
 using BTGChallange.Repository.DynamoDb;
+using BTGChallange.Repository.DynamoDbConf;
 using BTGChallange.Service.Interfaces;
 using BTGChallange.Service.Servicos;
 using BTGChallange.Service.Validator;
@@ -57,8 +58,7 @@ namespace Integrador.Ioc.DependecyInjector
                         Success = false,
                         StatusCode = StatusCodes.Status422UnprocessableEntity
                     };
-
-                    // Iterando sobre os erros do ModelState
+                    
                     foreach (var (key, value) in context.ModelState)
                     {
                         if (value.Errors.Any())
@@ -81,42 +81,50 @@ namespace Integrador.Ioc.DependecyInjector
         /// Injeções de dependencia relacionadas ao Repository
         /// </summary>
         /// <param name="serviceCollection"></param>
-        private static void AddRepository(IServiceCollection service, IConfiguration configuration)
+        private static void AddRepository(IServiceCollection services, IConfiguration configuration)
         {
-
-            service.AddSingleton<IAmazonDynamoDB>(provider =>
+            services.AddSingleton<IAmazonDynamoDB>(_ =>
             {
-                var environment = configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT");
-                var isDevelopment = environment == "Development";
+                var config = new AmazonDynamoDBConfig();
 
-                if (isDevelopment)
-                {
-                    // Desenvolvimento: DynamoDB Local
-                    var localConfig = new AmazonDynamoDBConfig
-                    {
-                        ServiceURL = "http://localhost:8000",
-                        RegionEndpoint = RegionEndpoint.USEast1
-                    };
-                    var fakeCredentials = new BasicAWSCredentials("fake", "fake");
-                    return new AmazonDynamoDBClient(fakeCredentials, localConfig);
-                }
-                else
-                {
-                    // Produção: AWS Real (usa credenciais automáticas)
-                    var prodConfig = new AmazonDynamoDBConfig
-                    {
-                        RegionEndpoint = RegionEndpoint.GetBySystemName(
-                            configuration.GetValue<string>("AWS:Region", "us-east-1")
-                        )
-                    };
+                // Configuração da região
+                var region = configuration["AWS:Region"] ?? "us-east-1";
+                config.RegionEndpoint = RegionEndpoint.GetBySystemName(region);
 
-                    return new AmazonDynamoDBClient(prodConfig);
+                var serviceUrl = Environment.GetEnvironmentVariable("AWS_ServiceURL") ?? configuration["DynamoDB:ServiceURL"];
+                              
+                // Verifica se é DynamoDB Local
+                if (!string.IsNullOrEmpty(serviceUrl))
+                {
+                    config.ServiceURL = serviceUrl;
+
+                    // Para DynamoDB Local, pode usar credenciais fake
+                    var accessKey = configuration["AWS:AccessKey"] ?? "fake";
+                    var secretKey = configuration["AWS:SecretKey"] ?? "fake";
+                    var credentials = new BasicAWSCredentials(accessKey, secretKey);
+                    var client = new AmazonDynamoDBClient(credentials, config);
+                    
+                    new ManagerTablesDynamoDb(client); //cria as tabelas caso não existam
+
+                    return client;
                 }
+
+                // Para produção, verifica se tem credenciais no appsettings
+                var prodAccessKey = configuration["AWS:AccessKey"];
+                var prodSecretKey = configuration["AWS:SecretKey"];
+
+                if (!string.IsNullOrEmpty(prodAccessKey) && !string.IsNullOrEmpty(prodSecretKey))
+                {
+                    var credentials = new BasicAWSCredentials(prodAccessKey, prodSecretKey);
+                    return new AmazonDynamoDBClient(credentials, config);
+                }
+
+                // Usa detecção automática de credenciais (variáveis de ambiente, IAM roles, etc.)
+                return new AmazonDynamoDBClient(config);
             });
 
-            // Repositórios
-            service.AddScoped<IRepositorioLimiteConta, RepositorioLimiteContaDynamoDb>();
-            service.AddScoped<IRepositorioTransacaoPix, RepositorioTransacaoPixDynamoDb>();
+            services.AddScoped<IRepositorioLimiteConta, RepositorioLimiteContaDynamoDb>();
+            services.AddScoped<IRepositorioTransacaoPix, RepositorioTransacaoPixDynamoDb>();
 
         }
     }
